@@ -1,0 +1,58 @@
+{% extends "mail/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h2>{{ request.user.email }}</h2>
+
+    <button class="btn btn-sm btn-outline-primary" id="inbox">Inbox</button>
+    <button class="btn btn-sm btn-outline-primary" id="compose">Compose</button>
+    <button class="btn btn-sm btn-outline-primary" id="sent">Sent</button>
+    <button class="btn btn-sm btn-outline-primary" id="archived">Archived</button>
+    <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
+    <hr>
+
+    <div class="container-fluid" id="emails-view">
+    </div>
+
+    <script>
+        window.csrfToken = "{{ csrf_token }}";
+    </script>
+
+    <div id="compose-view">
+        <h3>New Email</h3>
+        <form action = "{% url 'compose' %}"id="compose-form">
+            <div class="form-group">
+                From: <input disabled class="form-control" name="sender" value="{{ request.user.email }}">
+            </div>
+            <div class="form-group">
+                To: <input id="compose-recipients" class="form-control" name="recipients" required />
+            </div>
+            <div class="form-group">
+                <input class="form-control" id="compose-subject" name="subject" placeholder="Subject">
+            </div>
+            <textarea class="form-control" id="compose-body" name="body" placeholder="Body"></textarea>
+            <input type="submit" class="btn btn-primary" id="compose-submit"/>
+        </form>
+    </div>
+
+    <div class="container-fluid" id="email-view">
+        <h2>{{ email.subject }}</h2>
+        <p>From: {{ email.sender }}</p>
+        <p>To: {{ email.recipients }}</p>
+        <p>Date: {{ email.timestamp }}</p>
+        <p>{{ email.body }}</p>
+    
+        <div id="email-id" style="display: none;">{{ email.id }}</div>
+    
+        {% if email.archived %}
+            <button class="btn btn-primary" id="unarchive-email">Unarchive</button>
+        {% else %}
+            <button class="btn btn-primary" id="archive-email">Archive</button>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'mail/inbox.js' %}"></script>
+{% endblock %}
